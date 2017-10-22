@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			ul,li{
+				list-style: none;
+			}
+			ul{
+				float: left;
+			}
+			li{
+				width: 100px;
+			}
+			img{
+				display: block;
+				width: 100px;
+				height: 150px;
+			}
+			p{
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<ul class="main">
+		</ul>
+		<ul class="main2">
+		</ul>
+	</body>
+	<script type="text/javascript" src="js/jquery-1.8.2.min.js" ></script>
+	<script>
+		$(document).ready(function(){
+			$.ajax({
+				url:"text.json",
+				type:"get",
+				dataType:"json",
+				success:function(result){
+					for(var i=0;i<result.length;i++){
+						var $li=$('<li>');
+						var $img=$("<img>").attr("src",result[i].img);
+						var $text=$("<p>").text(result[i].txt);
+						var $span=$('<span>').text(result[i].no);
+						$text.append($span);
+						$li.append($img).append($text);
+						$('.main').append($li);
+					}
+				}
+			});
+			//1创建ajax对象
+			if(window.XMLHttpRequest){
+				var xhr = new XMLHttpRequest;
+			}else{
+				var xhr = new ActiveXObject('Microsoft.XMLHTTP');//兼容IE6以下版本的浏览器
+			};
+			//2链接 open()接受三个参数 请求方式 请求地址 是否是异步（同步几乎不用）
+			//get是把请求的数据放到地址栏上 
+			//post是把数据放到send上
+			xhr.open('get','text.json');
+			//3发送
+			xhr.send(null);
+			//4接收
+			xhr.onreadystatechange=function(){
+				if(xhr.readyState==4){//XHR对象的readyState属性表示请求/响应过程的当前活动阶段
+										//1-启动，调用了open()方法，未调用send()方法；
+										//2-发送，已经调用了send()方法，未接收到响应；
+										//3-接收，已经接收到部分响应数据；
+										//4-完成，已经接收到全部响应数据；
+										//readyState的值发生变化就会调用onreadystatechange 事件
+										
+					if(xhr.status==200){
+						//status是状态码 200是成功 404是错误
+						var result2=JSON.parse(xhr.responseText);//responseText：响应返回的主体内容，为字符串类型
+						var main2=document.getElementsByClassName('main2')[0];
+						for(var i=0;i<result2.length;i++){
+							var oP=document.createElement('p');
+							var oSpan=document.createElement('span');
+							oSpan.innerText=result2[i].no;
+							var oImg=document.createElement('img');
+							oImg.src=result2[i].img;
+							oP.innerText=result2[i].txt;
+							oP.appendChild(oSpan);
+							main2.appendChild(oImg);
+							main2.appendChild(oP);
+						}
+												//responseXML
+					}else{
+						alert('错误'+xhr.status)
+					}
+				}
+			}
+		});
+		
+	</script>
+</html>
